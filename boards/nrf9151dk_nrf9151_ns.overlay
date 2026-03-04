@@ -1,0 +1,13 @@
+&arduino_i2c {
+    status = "okay";
+
+    lsm303agr_accel: lsm303agr_accel@19 {
+        compatible = "st,lis2dh";
+        reg = <0x19>;
+    };
+
+    lsm303agr_mag: lsm303agr_mag@1e {
+        compatible = "st,lis2mdl";
+        reg = <0x1e>;
+    };
+};
