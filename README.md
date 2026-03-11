@@ -3,13 +3,20 @@
 A minimal Zephyr RTOS application that reads accelerometer and magnetometer data
 from an **LSM303AGR** sensor over I2C.
 
+## Supported boards
+
+| Board                          | Target                          | I2C pins                                |
+| ------------------------------ | ------------------------------- | --------------------------------------- |
+| Nordic nRF9151 DK              | `nrf9151dk/nrf9151/ns`          | Arduino header — SDA: P0.30, SCL: P0.31 |
+| Makerdiary nRF9151 Connect Kit | `nrf9151_connectkit/nrf9151/ns` | SDA: P0.17, SCL: P0.18                  |
+
 ## Prerequisites
 
 - Zephyr SDK / nRF Connect SDK toolchain (follow the [Getting Started](https://docs.zephyrproject.org/latest/develop/getting_started/index.html) guide)
 - A supported board with an I2C bus
-- LSM303AGR wired to the board's I2C bus (`SDA`/`SCL`) — on the **nRF9151 DK** these are pins **P0.30 (SDA)** and **P0.31 (SCL)** on the Arduino header — with:
-  - Accelerometer at address `0x19`
-  - Magnetometer at address `0x1E`
+- LSM303AGR wired to the board's I2C pins listed above, with:
+    - Accelerometer at address `0x19`
+    - Magnetometer at address `0x1E`
 
 ## Initialize the workspace
 
@@ -22,34 +29,21 @@ pip install -r zephyr/scripts/requirements.txt
 
 ## Device tree overlay
 
-A board overlay is required to enable the I2C bus and declare the LSM303AGR nodes. One is already provided for the **nRF9151 DK**:
+Board overlays are provided for both supported boards under `boards/`:
 
 ```
-boards/nrf9151dk_nrf9151_ns.overlay
-```
-
-For a different board, create a matching overlay file under `boards/` named after your board target (e.g. `boards/your_board.overlay`) with the following content, adjusting the I2C bus node label as needed:
-
-```dts
-&arduino_i2c {
-    status = "okay";
-
-    lsm303agr_accel: lsm303agr_accel@19 {
-        compatible = "st,lis2dh";
-        reg = <0x19>;
-    };
-
-    lsm303agr_mag: lsm303agr_mag@1e {
-        compatible = "st,lis2mdl";
-        reg = <0x1e>;
-    };
-};
+boards/
+  nrf9151dk_nrf9151_ns.overlay
+  nrf9151_connectkit_nrf9151_ns.overlay
 ```
 
 ## Build & flash
 ```bash
+# nrf9151dk/nrf9151/ns or nrf9151_connectkit/nrf9151/ns
+BOARD=nrf9151dk/nrf9151/ns
+
 cd zephyr-lsm303agr
-west build -b nrf9151dk/nrf9151/ns .
+west build -p always -b $BOARD .
 west flash
 ```
 
@@ -57,7 +51,8 @@ Replace `nrf9151dk/nrf9151/ns` with your board target if different.
 
 ## Expected serial output
 
-Connect to the board's serial port at **115200 baud**. You should see readings printed every second:
+Connect to the board's serial port at **115200 baud** (`/dev/ttyACM0` on Linux, `/dev/tty.usbmodem*` on macOS).
+You should see readings printed every second:
 
 ```
 Accel: X=0.12 Y=-0.03 Z=9.81 m/s²
