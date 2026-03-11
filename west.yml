@@ -2,6 +2,8 @@ manifest:
   remotes:
     - name: ncs
       url-base: https://github.com/nrfconnect
+    - name: makerdiary
+      url-base: https://github.com/makerdiary
 
   projects:
     - name: nrf
@@ -9,6 +11,12 @@ manifest:
       remote: ncs
       revision: v3.2.2
       import: true
+
+    - name: nrf9151-connectkit
+      remote: makerdiary
+      revision: main
+      path: nrf9151-connectkit
+      import: false # only pull the board files
 
   self:
     path: zephyr-lsm303agr
