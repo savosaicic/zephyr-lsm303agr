@@ -60,3 +60,60 @@ Mag:   X=0.23 Y=-0.11 Z=0.45 Gauss
 Accel: X=0.11 Y=-0.02 Z=9.82 m/s²
 Mag:   X=0.22 Y=-0.10 Z=0.44 Gauss
 ```
+
+## Magnetometer Calibration
+
+This project applies **hard-iron** and **soft-iron** calibration
+to the LSM303AGR magnetometer:
+
+- **Hard-iron offsets**: constant bias from nearby magnetic sources
+  (handled in hardware)
+- **Soft-iron correction**: distortion from surrounding materials
+  (handled in software)
+
+### Calibration Data Source
+
+Calibration values are currently **stubbed** in `calibration.c`:
+
+- They come from a **MotionCal session** (external calibration tool)
+- The tool computes:
+    - A **hard-iron offset vector**
+    - A **3×3 soft-iron correction matrix**
+
+```c
+struct mag_calibration {
+  float hard_iron[3];
+  float soft_iron[3][3];
+};
+```
+
+These values are assumed to be precomputed by moving the sensor in all
+orientations during calibration.
+
+### How Calibration Is Applied
+
+#### 1. Load Calibration into a runtime structure
+
+```c
+calibration_load(&cal);
+```
+
+#### 2. Apply Hard-Iron (Hardware)
+
+```c
+calibration_apply_hw(i2c, &cal);
+```
+
+- Converts hard-iron offsets from **Gauss** to **LSB**
+- Writes them into LSM303AGR offset registers via I2C
+- After this, all magnetometer readings are automatically hard-iron corrected
+  by the chip
+
+#### 3. Apply Soft-Iron (Software)
+
+```c
+calibration_apply_sw(&cal, mx, my, mz, &cx, &cy, &cz);
+```
+
+- Applies a **3×3 matrix transform** to the raw measurements
+- Input must already be hard-iron corrected
