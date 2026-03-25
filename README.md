@@ -117,3 +117,23 @@ calibration_apply_sw(&cal, mx, my, mz, &cx, &cy, &cz);
 
 - Applies a **3×3 matrix transform** to the raw measurements
 - Input must already be hard-iron corrected
+
+### Calibration storage in production
+
+In production, calibration coefficients could be stored in a dedicated
+NVS flash partition as a `struct mag_calibration`:
+
+```c
+struct mag_calibration {
+    float    hard_iron[3];
+    float    soft_iron[3][3];
+    uint8_t  signature[64];
+};
+```
+
+We could add a signature field to ensure data integrity and authenticity.
+The signature would cover everything before the `signature` field,
+and firmware should refuse to use calibration data that fails verification.
+
+The `calibration_load()` function would retrieve these values from NVS
+instead of using stubbed values.
