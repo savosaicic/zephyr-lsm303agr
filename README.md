@@ -61,6 +61,14 @@ Accel: X=0.11 Y=-0.02 Z=9.82 m/s²
 Mag:   X=0.22 Y=-0.10 Z=0.44 Gauss
 ```
 
+## Single-tap detection
+
+Accelerometer fires `SENSOR_TRIG_TAP` on any axis; handler logs `TAP detected`.
+
+Wire sensor **INT1** to a GPIO and set the pin in the board overlay.
+Tune via `SENSOR_ATTR_SLOPE_TH` (threshold, m/s²) and
+`SENSOR_ATTR_SLOPE_DUR` (ODR samples) in `main.c`.
+
 ## Magnetometer Calibration
 
 This project applies **hard-iron** and **soft-iron** calibration

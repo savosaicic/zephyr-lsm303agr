@@ -13,6 +13,12 @@ const struct device *mag   = DEVICE_DT_GET(DT_NODELABEL(lsm303agr_mag));
 static const struct device *i2c =
   DEVICE_DT_GET(DT_BUS(DT_NODELABEL(lsm303agr_mag)));
 
+static void tap_handler(const struct device *dev,
+                        const struct sensor_trigger *trig)
+{
+  LOG_INF("TAP detected");
+}
+
 int main(void)
 {
   int ret;
@@ -45,6 +51,34 @@ int main(void)
   ret = calibration_apply_hw(i2c, &cal);
   if (ret < 0) {
     LOG_ERR("calibration_apply_hw failed: %d", ret);
+    return ret;
+  }
+
+  /* Single-tap detection on accelerometer */
+  struct sensor_value tap_th;
+  sensor_g_to_ms2(2, &tap_th);  /* ~2g threshold */
+  ret = sensor_attr_set(accel, SENSOR_CHAN_ACCEL_XYZ,
+                        SENSOR_ATTR_SLOPE_TH, &tap_th);
+  if (ret < 0) {
+    LOG_ERR("tap threshold set failed: %d", ret);
+    return ret;
+  }
+
+  struct sensor_value tap_dur = { .val1 = 3, .val2 = 0 }; /* ODR samples */
+  ret = sensor_attr_set(accel, SENSOR_CHAN_ACCEL_XYZ,
+                        SENSOR_ATTR_SLOPE_DUR, &tap_dur);
+  if (ret < 0) {
+    LOG_ERR("tap duration set failed: %d", ret);
+    return ret;
+  }
+
+  static const struct sensor_trigger tap_trig = {
+    .type = SENSOR_TRIG_TAP,
+    .chan = SENSOR_CHAN_ACCEL_XYZ,
+  };
+  ret = sensor_trigger_set(accel, (struct sensor_trigger *)&tap_trig, tap_handler);
+  if (ret < 0) {
+    LOG_ERR("tap trigger set failed: %d", ret);
     return ret;
   }
 

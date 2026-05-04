@@ -9,6 +9,8 @@
  *   SDA → P0.17   SCL → P0.18
  */
 
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
 &pinctrl {
     i2c2_default: i2c2_default {
         group1 {
@@ -37,6 +39,9 @@
     lsm303agr_accel: lsm303agr_accel@19 {
         compatible = "st,lis2dh";
         reg = <0x19>;
+        irq-gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+        anym-on-int1;
+        int1-gpio-config = <3>; /* LEVEL_HIGH */
     };
 
     lsm303agr_mag: lsm303agr_mag@1e {
