@@ -9,7 +9,7 @@ manifest:
     - name: nrf
       repo-path: sdk-nrf
       remote: ncs
-      revision: v3.2.2
+      revision: v3.3.0
       import: true
 
     - name: nrf9151-connectkit

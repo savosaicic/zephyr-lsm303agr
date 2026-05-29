@@ -21,13 +21,21 @@ LOG_MODULE_REGISTER(calibration);
  */
 #define MAG_SENS_GAUSS_PER_LSB 0.0015f
 
-/* Stub calibration data (in Gauss) */
+///* Stub calibration data (in Gauss) */
+//static const struct mag_calibration cal_stub = {
+//  .hard_iron = {-0.1691f, -0.1813f, 0.1774f},
+//  .soft_iron = {
+//    {+0.985f, +0.020f, +0.008f},
+//    {+0.020f, +1.026f, -0.014f},
+//    {+0.008f, -0.014f, +0.990f},
+//  }};
+
 static const struct mag_calibration cal_stub = {
-  .hard_iron = {-0.1691f, -0.1813f, 0.1774f},
+  .hard_iron = {-0.7637f, -0.5703f, -0.1594f},
   .soft_iron = {
-    {+0.985f, +0.020f, +0.008f},
-    {+0.020f, +1.026f, -0.014f},
-    {+0.008f, -0.014f, +0.990f},
+    {+1.0066f, -0.0010f, -0.0140f},
+    {-0.0010f, +1.0693f, -0.0289f},
+    {-0.0140f, -0.0289f, +0.9300f},
   }};
 
 /*
